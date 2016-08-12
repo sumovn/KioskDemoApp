@@ -3,6 +3,7 @@ package com.n2t.kioskdemo;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.view.KeyEvent;
@@ -62,6 +63,41 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        View btnPin = findViewById(R.id.btnPin);
+        View btnUnPin = findViewById(R.id.btnUnpin);
+        View btnOpenSetting = findViewById(R.id.btnOpenSetting);
+
+        btnPin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                startLockTask();
+            }
+        });
+
+        btnUnPin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try
+                {
+                    stopLockTask();
+                }
+                catch (Exception e)
+                {
+                    System.out.println("Screen was unlocked already.");
+                }
+            }
+        });
+
+        btnOpenSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("Setting");
+                Intent intent = new Intent(Settings.ACTION_SETTINGS);
+                startActivity(intent);
+            }
+        });
+
     }
 
     @Override
@@ -72,10 +108,13 @@ public class MainActivity extends AppCompatActivity
         } else {
             /**
              * Kiosk disable back button on Device.
-             * */
+             **/
             if(!PrefUtils.isKioskModeActive(this))
                 super.onBackPressed();
         }
+
+        System.out.println("onBack");
+
     }
 
     @Override
@@ -197,4 +236,22 @@ public class MainActivity extends AppCompatActivity
         wakeLock.release();
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            //preventing default implementation previous to android.os.Build.VERSION_CODES.ECLAIR
+            System.out.println("key back");
+            return false;
+        }
+        else if(keyCode==KeyEvent.KEYCODE_HOME){
+            System.out.println("key home");
+            return true;
+        }
+        else if(keyCode==KeyEvent.KEYCODE_MENU){
+            System.out.println("key menu");
+            return true;
+        }
+
+        return super.onKeyDown(keyCode, event);
+    }
 }

@@ -16,16 +16,13 @@ public class AppContext extends Application {
   public void onCreate() {
     super.onCreate();
     instance = this;
-    registerKioskModeScreenOffReceiver();
   }
 
   private void registerKioskModeScreenOffReceiver() {
     // register screen off receiver
-    final IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
+    IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
     onScreenOffReceiver = new OnScreenOffReceiver();
     registerReceiver(onScreenOffReceiver, filter);
-
-    startKioskService();  // add this
   }
 
   public PowerManager.WakeLock getWakeLock() {
@@ -37,15 +34,23 @@ public class AppContext extends Application {
     return wakeLock;
   }
 
-  private void startKioskService() {
-    // ... and this method
+  public void startKioskService() {
+
+    //register broadcast receiver screen off
+    registerKioskModeScreenOffReceiver();
+
+    //start service catch app is background
     System.out.println("start service...");
     startService(new Intent(this, KioskService.class));
     //set Kiosk is start
     PrefUtils.setKioskModeActive(true, this);
+
   }
 
   public void stopKioskService(){
+    //
+    unregisterReceiver(onScreenOffReceiver);
+    //
     stopService(new Intent(this, KioskService.class));
   }
 

@@ -10,8 +10,10 @@ public class BootReceiver extends BroadcastReceiver {
   public void onReceive(Context context, Intent intent) {
     System.out.println("Hello! device boot completed");
 
-    Intent myIntent = new Intent(context, MainActivity.class);
+    //stop test
+    /*Intent myIntent = new Intent(context, MainActivity.class);
     myIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    context.startActivity(myIntent);
+    context.startActivity(myIntent);*/
+
   }
 }

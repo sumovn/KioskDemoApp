@@ -55,17 +55,25 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        Button btnStop = (Button) findViewById(R.id.button);
-        btnStop.setOnClickListener(new View.OnClickListener() {
+        View btnStartKiosk = findViewById(R.id.btnStartKiosk);
+        View btnStopKiosk = findViewById(R.id.btnStopKiosk);
+        View btnPin = findViewById(R.id.btnPin);
+        View btnUnPin = findViewById(R.id.btnUnpin);
+        View btnOpenSetting = findViewById(R.id.btnOpenSetting);
+
+        btnStartKiosk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((AppContext)getApplication()).startKioskService();
+            }
+        });
+
+        btnStopKiosk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ((AppContext)getApplication()).stopKioskService();
             }
         });
-
-        View btnPin = findViewById(R.id.btnPin);
-        View btnUnPin = findViewById(R.id.btnUnpin);
-        View btnOpenSetting = findViewById(R.id.btnOpenSetting);
 
         btnPin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,6 +129,7 @@ public class MainActivity extends AppCompatActivity
     protected void onPause() {
         super.onPause();
         System.out.println("onpause...");
+
         if(PrefUtils.isKioskModeActive(this)){
             /**
              * Manifest must set launchmode is SingleTop.
@@ -216,27 +225,15 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (blockedKeys.contains(event.getKeyCode())) {
-            System.out.println("Key volume...");
+            System.out.println("Key " + event.getKeyCode() + " -> lock");
             return true;
         } else {
+            System.out.println("Key " + event.getKeyCode());
             return super.dispatchKeyEvent(event);
         }
     }
 
-    private void wakeUpDevice(AppContext context) {
-        PowerManager.WakeLock wakeLock = context.getWakeLock(); // get WakeLock reference via AppContext
-        if (wakeLock.isHeld()) {
-            wakeLock.release(); // release old wake lock
-        }
-
-        // create a new wake lock...
-        wakeLock.acquire();
-
-        // ... and release again
-        wakeLock.release();
-    }
-
-    @Override
+    /*@Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             //preventing default implementation previous to android.os.Build.VERSION_CODES.ECLAIR
@@ -253,5 +250,19 @@ public class MainActivity extends AppCompatActivity
         }
 
         return super.onKeyDown(keyCode, event);
+    }*/
+
+    private void wakeUpDevice(AppContext context) {
+        PowerManager.WakeLock wakeLock = context.getWakeLock(); // get WakeLock reference via AppContext
+        if (wakeLock.isHeld()) {
+            wakeLock.release(); // release old wake lock
+        }
+
+        // create a new wake lock...
+        wakeLock.acquire();
+
+        // ... and release again
+        wakeLock.release();
     }
+
 }
